@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<suite name="reditorTest" parallel="false">
+
+    <test name="编发中心">
+        <classes>
+            <class name="mymanuscript.CreateScriptTest"></class>
+            <class name="mymanuscript.ScriptManageTest"></class>
+            <class name="mymanuscript.RecycleManageTest"></class>
+        </classes>
+    </test>
+    <listeners>
+        <listener class-name="org.uncommons.reportng.HTMLReporter"/>
+        <listener class-name="org.uncommons.reportng.JUnitXMLReporter"/>
+    </listeners>
+</suite>
