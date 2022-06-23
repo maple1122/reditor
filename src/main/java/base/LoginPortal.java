@@ -23,6 +23,9 @@ public class LoginPortal {
 
     public static String domain = env().get(0);
     public static String siteName = env().get(1);
+    public static String channel1 = env().get(4);
+    public static String channel2 = env().get(5);
+    public static String usernick = env().get(6);
 
     static WebDriver driver = initDriver();
 
@@ -83,17 +86,23 @@ public class LoginPortal {
         List<String> envlist = new ArrayList<>();
         try {
             prois = new FileInputStream("application.properties");
-            pro.load(new InputStreamReader(prois,"UTF-8"));
+            pro.load(new InputStreamReader(prois, "UTF-8"));
 
             String domain = (String) pro.getProperty(envString + ".domain");
             String siteName = (String) pro.getProperty(envString + ".siteName");
             String username = (String) pro.getProperty(envString + ".username");
             String password = (String) pro.getProperty(envString + ".password");
+            String channel1 = (String) pro.getProperty("channel1");
+            String channel2 = (String) pro.getProperty("channel2");
+            String usernick=(String) pro.getProperty("usernick");
 
             envlist.add(domain);
             envlist.add(siteName);
             envlist.add(username);
             envlist.add(password);
+            envlist.add(channel1);
+            envlist.add(channel2);
+            envlist.add(usernick);
 
         } catch (IOException e) {
             e.printStackTrace();
