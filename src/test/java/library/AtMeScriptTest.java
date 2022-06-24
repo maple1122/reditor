@@ -1,4 +1,4 @@
-package mymanuscript;
+package library;
 
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -10,25 +10,15 @@ import static org.testng.Assert.*;
 
 /**
  * @author wufeng
- * @date 2022/6/22 15:25
+ * @date 2022/6/23 16:57
  */
-public class FinishedScriptTest {
+public class AtMeScriptTest {
 
-    @Test(priority = 1)//稿件签发
-    public void testPush() throws InterruptedException {
-        FinishedScript.push();
-        FinishedScript.push();
+    @Test//删除@我的稿件
+    public void testDelete() throws InterruptedException {
+        AtMeScript.delete();
     }
 
-    @Test(priority = 2)//传稿
-    public void testFeature() throws InterruptedException {
-        FinishedScript.feature();
-    }
-
-    @Test(priority = 3)//一键撤稿
-    public void testBack() throws InterruptedException {
-        FinishedScript.back();
-    }
 
     @BeforeMethod
     public void testStart(Method method) {

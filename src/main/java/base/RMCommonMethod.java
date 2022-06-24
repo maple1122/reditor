@@ -4,6 +4,9 @@ import org.openqa.selenium.*;
 
 import java.util.List;
 
+import static base.LoginPortal.channel1;
+import static base.LoginPortal.siteName;
+
 /**
  * @author wufeng
  * @date 2022/2/7 14:54
@@ -59,7 +62,6 @@ public class RMCommonMethod {
             if (isJudgingElement(driver, By.xpath("//ul[@class='mtl_audioList']/li")))//校验是否返回了素材数据，如果没有循环等待3次，每次3秒
                 break;
         }
-
         //获取素材数据列表
         List<WebElement> audioes = driver.findElements(By.xpath("//ul[@class='mtl_audioList']/li"));//获取音频素材数据列表
 
@@ -94,117 +96,77 @@ public class RMCommonMethod {
         }
     }
 
-    //获取指定测试频道
-    public static void getTestTree(WebDriver driver, String id, String channelName) throws InterruptedException {
-
-        List<WebElement> lis1, lis2;
-        Boolean isTest = false;
-        for (int i = 0; i < 5; i++) {
-            Thread.sleep(2000);
-            if (isJudgingElement(driver, By.xpath("//ul[@id='" + id + "']/li"))) break;
-        }
-        lis1 = driver.findElements(By.xpath("//ul[@id='" + id + "']/li"));//一级list
-        for (int i = 0; i < lis1.size(); i++) {
-            lis2 = lis1.get(i).findElements(By.xpath("ul/li"));//二级list
-            for (int j = 0; j < lis2.size(); j++) {
-                if (lis2.get(j).findElement(By.xpath("a/span[2]")).getText().contains(channelName)) {//二级中是否有其他频道名称
-                    if (!lis2.get(j).findElement(By.xpath("a")).getAttribute("class").contains("curSelectedNode")) {
-                        lis2.get(j).findElement(By.xpath("a/span[2]")).click();//点击该频道
-                        if (isJudgingElement(lis2.get(j), By.xpath("span[@class='button chk radio_false_full']")))//如果是选择框方式
-                            lis2.get(j).findElement(By.xpath("span[@class='button chk radio_false_full']")).click();//点击选择框
-                    }
-                    isTest = true;
-                    break;
-                }
-            }
-            if (isTest) break;
-        }
-        Thread.sleep(3000);
-    }
-
-    //获取默认测试频道“测试test”
-    public static void getTestTree(WebDriver driver) throws InterruptedException {
-        getTestTree(driver, "columnTree_1_ul", "测试test");
-    }
-
-    //获取自动化测试数据，type=1，待编区；type=2，成稿区
-    public static WebElement getTestArticle(WebDriver driver, int type) throws InterruptedException {
-
-        if (type == 1 || type == 2) {
-            if (type == 1 && !isJudgingElement(driver, By.cssSelector("div.accordion.accordionlist.accordion1.opened"))) {//待编区，且未打开状态
-                driver.findElement(By.cssSelector("div.accordion.accordionlist.accordion1")).click();//打开待编区
-                Thread.sleep(2000);
-            }
-            if (isJudgingElement(driver, By.xpath("//ul[@id='ulListArea" + type + "']/li/div"))) {
-                String articleName;
-                List<WebElement> articles = driver.findElements(By.xpath("//ul[@id='ulListArea" + type + "']/li"));
-                for (int i = 0; i < articles.size(); i++) {
-                    articleName = articles.get(i).findElement(By.xpath("div/div/div[@class='article-content']/div/section/a")).getText();
-                    if (articleName.contains("autoTest") && !articleName.contains("样式卡")) {
-                        return articles.get(i);
-                    }
-                }
-            }
-        } else System.out.println("type传值错误，1为待编区；2为成稿区；其他值无效");
-        return null;
-    }
-
-    //获取自动化测试数据
-    public static WebElement getTestArticle(WebDriver driver, int type, String exclude) throws InterruptedException {
-
-        if (type == 1 || type == 2) {
-            if (type == 1 && !isJudgingElement(driver, By.cssSelector("div.accordion.accordionlist.accordion1.opened"))) {//待编区，且未打开状态
-                driver.findElement(By.cssSelector("div.accordion.accordionlist.accordion1")).click();//打开待编区
-                Thread.sleep(2000);
-            }
-            if (isJudgingElement(driver, By.xpath("//ul[@id='ulListArea1']/li/div"))) {
-                String articleName;
-                List<WebElement> articles = driver.findElements(By.xpath("//ul[@id='ulListArea" + type + "']/li"));
-                for (int i = 0; i < articles.size(); i++) {
-                    articleName = articles.get(i).findElement(By.xpath("div/div/div[@class='article-content']/div/section/a")).getText();
-                    if (articleName.contains("autoTest") && !articleName.contains(exclude)) {
-                        return articles.get(i);
-                    }
-                }
-            }
-        } else System.out.println("type传值错误，1为待编区；2为成稿区；其他值无效");
-        return null;
-    }
-
-    //切换到功能页面
-    public static void changeMenu(WebDriver driver, String type) throws InterruptedException {
-        if (!driver.findElement(By.xpath("//ul[@id='headNavMenu']/li[@class='layui-nav-item layui-this']")).getText().equals(type)) {//校验当前是否在目标tab页
-            List<WebElement> menu = driver.findElements(By.xpath("//ul[@id='headNavMenu']/li"));//菜单列表
-            for (int i = 0; i < menu.size(); i++) {
-                if (menu.get(i).getText().equals(type)) {//菜单标题等于其他tab
-                    menu.get(i).click();//点击进入该tab页
-                    Thread.sleep(2000);
-                    break;
-                }
-            }
-        }
-    }
-
-    //获取自动化测试数据
-    public static void searchTestArticles(WebDriver driver, int type) throws InterruptedException {
-        if (type == 1 && !isJudgingElement(driver, By.cssSelector("div.accordion.accordionlist.accordion1.opened"))) {//待编区，且未打开状态
-            driver.findElement(By.cssSelector("div.accordion.accordionlist.accordion1")).click();//打开待编区
-            Thread.sleep(2000);
-        }
-        driver.findElement(By.xpath("//form[@id='formDemo']/ul/li[@class='item search']/input")).sendKeys("autoTest");//录入搜索关键词
+    //签发图层
+    public static boolean treeIframe(WebDriver driver) throws InterruptedException {
+        boolean success = false;
+        driver.switchTo().frame("treeIframe");//切换到签发图层
+        Thread.sleep(500);
+        driver.findElement(By.cssSelector("div.el-input.el-input--suffix")).click();//点击渠道选择框
         Thread.sleep(200);
-        driver.findElement(By.xpath("//form[@id='formDemo']/ul/li[@class='item search']/a")).click();//点击搜索
-        Thread.sleep(1500);
+        if (RMCommonMethod.isJudgingElement(driver, By.xpath("//ul[@class='el-scrollbar__view el-select-dropdown__list']/li"))) {//校验是否有渠道数据
+            List<WebElement> li = driver.findElements(By.xpath("//ul[@class='el-scrollbar__view el-select-dropdown__list']/li"));//获取渠道数据列表
+            for (int i = 0; i < li.size(); i++) {
+                if (li.get(i).findElement(By.xpath("p")).getText().equals(siteName)) {//校验渠道是否是目标测试渠道
+                    li.get(i).click();//点击渠道
+                    success = true;
+                    break;
+                }
+            }
+            Thread.sleep(1000);
+            if (success) {
+                if (selectChannel(driver))//选择测试频道是否成功
+                    driver.findElement(By.cssSelector("button.el-button.lz-tree-ok.el-button--default")).click();//点击确定
+                else {
+                    success = false;
+                    driver.findElement(By.cssSelector("button.el-button.lz-tree-cancel.el-button--default")).click();//点击取消
+                }
+            } else System.out.println("签发渠道中没有" + siteName);
+        } else System.out.println("没有可签发的渠道");
+        driver.switchTo().parentFrame();//退出签发iframe，返回到上一级
+        Thread.sleep(1000);
+        return success;
     }
 
-    //校验元素是否存在
-    public static boolean isJudgingElement(WebElement webElement, By by) {
-        try {
-            webElement.findElement(by);
-            return true;//有登录按钮，登录界面
-        } catch (Exception e) {
-            return false;//无登录按钮，非登录界面
+    //选择测试频道
+    public static boolean selectChannel(WebDriver driver) throws InterruptedException {
+        boolean selected = false;
+        //一级频道
+        List<WebElement> li1 = driver.findElements(By.xpath("//div[@class='lz-tree-box']/div[2]/div"));//一级频道列表
+        for (int i1 = 0; i1 < li1.size(); i1++) {
+            if (!li1.get(i1).findElement(By.xpath("div[1]/span")).getAttribute("class").contains("is-leaf")) {//如果有下一级可展开
+                li1.get(i1).findElement(By.xpath("div[1]/span")).click();//点击展开第二级频道
+                Thread.sleep(200);
+                //二级频道
+                List<WebElement> li2 = li1.get(i1).findElements(By.xpath("div[2]/div"));//第二级频道的数据列表
+                for (int i2 = 0; i2 < li2.size(); i2++) {
+                    if (li2.get(i2).findElement(By.xpath("div/span[2]")).getText().contains(channel1)) {//第二级频道名称是否有测试test
+                        li2.get(i2).findElement(By.xpath("div/label/span")).click();//点击勾选
+                        selected = true;
+                        break;
+                    }
+                    Thread.sleep(100);
+                }
+            }
+            if (selected) break;
+            Thread.sleep(100);
         }
+        if (!selected) System.out.println("没有找到测试test频道");
+        Thread.sleep(1000);
+        return selected;
+    }
+
+
+    //获取有效确定按钮
+    public static WebElement getButtonDiv(WebDriver driver) {
+        WebElement buttonDiv = null;
+        List<WebElement> list = driver.findElements(By.className("el-dialog__wrapper"));
+        for (int i = 0; i < list.size(); i++) {
+            if (!list.get(i).getAttribute("style").contains("display")){
+                buttonDiv=list.get(i);
+                break;
+            }
+        }
+        return buttonDiv;
     }
 
     //校验元素是否能找到
@@ -214,16 +176,6 @@ public class RMCommonMethod {
             return true;//有登录按钮，登录界面
         } catch (Exception e) {
             return false;//无登录按钮，非登录界面
-        }
-    }
-
-    //校验元素有某个属性
-    public static boolean isAttribtuePresent(WebElement element, String attribute) {
-        try {
-            element.getAttribute(attribute);
-            return true;
-        } catch (Exception e) {
-            return false;
         }
     }
 
@@ -237,13 +189,33 @@ public class RMCommonMethod {
         }
     }
 
-    //获取alert文案、关闭alert
-    public static String closeAlert(WebDriver driver) {
-        Alert alert = driver.switchTo().alert();
-        String text = alert.getText();
-        System.out.println(text);
-        alert.accept();
-        return text;
-    }
+    //校验元素是否存在
+//    public static boolean isJudgingElement(WebElement webElement, By by) {
+//        try {
+//            webElement.findElement(by);
+//            return true;//有登录按钮，登录界面
+//        } catch (Exception e) {
+//            return false;//无登录按钮，非登录界面
+//        }
+//    }
+
+//    //校验元素有某个属性
+//    public static boolean isAttribtuePresent(WebElement element, String attribute) {
+//        try {
+//            element.getAttribute(attribute);
+//            return true;
+//        } catch (Exception e) {
+//            return false;
+//        }
+//    }
+
+//    //获取alert文案、关闭alert
+//    public static String closeAlert(WebDriver driver) {
+//        Alert alert = driver.switchTo().alert();
+//        String text = alert.getText();
+//        System.out.println(text);
+//        alert.accept();
+//        return text;
+//    }
 
 }
